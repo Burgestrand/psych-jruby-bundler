@@ -11,23 +11,33 @@ permissions:
   contents: read
 
 jobs:
+  ruby-versions:
+    uses: ruby/actions/.github/workflows/ruby_versions.yml@master
+    with:
+      engine: cruby-jruby
+      min_version: 2.5
+
   bundle-install:
-    runs-on: ubuntu-latest
+    needs: ruby-versions
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        ruby-version:
-          - 'jruby-9.3.10'
-          - 'jruby'
-          - 'jruby-head'
-
+        ruby: ${{ fromJson(needs.ruby-versions.outputs.versions) }}
+        os: [ ubuntu-latest, macos-latest, windows-latest ]
+        include:
+          - { os: windows-latest, ruby: ucrt }
+          - { os: windows-latest, ruby: mingw }
+          - { os: windows-latest, ruby: mswin }
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up Ruby
-      uses: ruby/setup-ruby@v1
-      with:
-        rubygems: latest
-        ruby-version: ${{ matrix.ruby-version }}
-        bundler-cache: false
-    - name: Bundler install
-      run: bundle install
+      - uses: actions/checkout@v4
+      - name: Set up Ruby
+        uses: ruby/setup-ruby-pkgs@v1
+        with:
+          rubygems: latest
+          ruby-version: ${{ matrix.ruby }}
+          apt-get: "haveged libyaml-dev"
+          brew: libyaml
+          vcpkg: libyaml
+      - name: Install dependencies
+        run: bundle install --jobs 1

@@ -36,7 +36,8 @@ jobs:
         bundler-cache: false
     - name: Preinstall
       if: ${{ matrix.preinstall == 'true' }}
-      run: gem install psych
+      run: |
+        gem install ruby-maven jar-dependencies
     - name: Bundler install
       run: bundle install
     - run: ruby test.rb

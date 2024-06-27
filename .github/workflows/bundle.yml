@@ -33,3 +33,4 @@ jobs:
         bundler-cache: false
     - name: Bundler install
       run: bundle install
+    - run: ruby test.rb

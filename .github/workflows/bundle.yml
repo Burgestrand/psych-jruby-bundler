@@ -1,0 +1,33 @@
+name: Main
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  bundle-install:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby-version:
+          - 'jruby-9.3.10'
+          - 'jruby'
+          - 'jruby-head'
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        rubygems: latest
+        ruby-version: ${{ matrix.ruby-version }}
+        bundler-cache: false
+    - name: Bundler install
+      run: bundle install

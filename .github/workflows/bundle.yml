@@ -31,5 +31,6 @@ jobs:
         rubygems: latest
         ruby-version: ${{ matrix.ruby-version }}
         bundler-cache: false
+    - run: gem install psych
     - name: Bundler install
       run: bundle install
